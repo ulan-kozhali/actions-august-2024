@@ -8,6 +8,16 @@ on:
   #   branches: [ "main" ]
 
   workflow_dispatch:
+    inputs:
+      docker_image:
+        description: 'Enter image name:'
+        required: true
+        default: ''
+      docker_tag:
+        description: 'Enter image tag:'
+        required: true
+        default: ''
+
 
 jobs:
   build:
@@ -36,18 +46,18 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: false
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:1.0.0
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.docker_image}}:${{ inputs.docker_tag}}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/flask-app:1.0.0'
+          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.docker_image}}:${{ inputs.docker_tag}}'
           format: 'table'
           
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           push: false
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:1.0.0
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.docker_image}}:${{ inputs.docker_tag}}
 
       
